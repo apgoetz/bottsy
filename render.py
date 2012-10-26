@@ -3,6 +3,12 @@ import os
 import random
 from math import *
 from Tkinter import *
+from dbclient import *
+
+conn = init_db("chromosome")
+xcid = sys.argv[1]
+xc = select_xc(conn,xcid)
+print xc
 
 DEF_WIDTH = 2
 
@@ -121,6 +127,7 @@ while i < max_iter:
 	i = i + 1
 	master.update()
 
+dbclient.close_db(conn)
 print "Saving image file... "
 cv.postscript(file = "output.eps")
 print "Waiting to end..."

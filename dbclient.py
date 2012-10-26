@@ -4,7 +4,6 @@ import sqlite3
 import sys
 
 
-
 def print_help():
     print '''
 dbclient.py Usage:
@@ -52,24 +51,22 @@ def add_xc(conn, eid, alive, xc, parents, age, score):
                (eid, int(alive), xc, parents, int(age), float(score))))
 
 
+def init_db(name):
 ####START OF SCRIPT
 
 
 #Get the name of the database file to use
-if len(sys.argv) < 2:
-    print_help() 
-    sys.exit(-1)
 
-dbname = sys.argv[1]
+	dbname = name
 
-#make a connection to the database
-conn = sqlite3.connect(dbname)
+	#make a connection to the database
+	conn = sqlite3.connect(dbname)
 
-#once we have a connection we need a 'cursor' to actually do anything..
-c = conn.cursor()
+	#once we have a connection we need a 'cursor' to actually do anything..
+	c = conn.cursor()
 
 
-# first of all, we need to capture the schema available for the
+# first of all we need to capture the schema available for the
 # database. There are two main tables:
 #
 # experiment: contains metadata about the experiment being executed
@@ -77,10 +74,10 @@ c = conn.cursor()
 # | id INTEGER PRIMARY KEY | name TEXT | heuristics BLOB |
 # +------------------------+-----------+-----------------+
 
-c.execute('''CREATE TABLE IF NOT EXISTS experiment 
-(id INTEGER PRIMARY KEY,
-name TEXT NOT NULL,
-heuristics BLOB NOT NULL)''')
+	c.execute('''CREATE TABLE IF NOT EXISTS experiment 
+	(id INTEGER PRIMARY KEY,
+	name TEXT NOT NULL,
+	heuristics BLOB NOT NULL)''')
 
 
 
@@ -88,35 +85,21 @@ heuristics BLOB NOT NULL)''')
 # +------------------------+----------------------+---------------+---------+--------------+-------------+------------+
 # | id INTEGER PRIMARY KEY | eid INTEGER NOT NULL | alive BOOLEAN | xc BLOB | parents BLOB | age INTEGER | score REAL |
 # +------------------------+- --------------------+---------------+---------+--------------+-------------+------------+
-c.execute('''CREATE TABLE IF NOT EXISTS chromosome
-(id INTEGER PRIMARY KEY,
-eid INTEGER NOT NULL,
-alive BOOLEAN NOT NULL,
-xc BLOB NOT NULL,
-parents BLOB,
-age INTEGER NOT NULL,
-score REAL NOT NULL,
-FOREIGN KEY(eid) REFERENCES experiment(id))''')
+	c.execute('''CREATE TABLE IF NOT EXISTS chromosome
+	(id INTEGER PRIMARY KEY,
+	eid INTEGER NOT NULL,
+	alive BOOLEAN NOT NULL,
+	xc BLOB NOT NULL,
+	parents BLOB,
+	age INTEGER NOT NULL,
+	score REAL NOT NULL,
+	FOREIGN KEY(eid) REFERENCES experiment(id))''')
+	return conn
 
-
-if len(sys.argv) > 2:
-    if(sys.argv[2] == "lx"):
-        list_xc(conn)
-    elif(sys.argv[2] == "lxe" and len(sys.argv) >= 4):
-        list_by_exp(conn, sys.argv[3])
-    elif(sys.argv[2] == "ae" and len(sys.argv) >= 5):
-        add_exp(conn, sys.argv[3], sys.argv[4])
-    elif(sys.argv[2] == "le"):
-        list_exp(conn)
-    elif(sys.argv[2] == "ax" and len(sys.argv) >= 9):
-        add_xc(conn, sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7], sys.argv[8])
-    
-
-
-
+def close_db(conn): 
 # close the db:
-conn.commit()
-conn.close()
+	conn.commit()
+	conn.close()
 
 
 

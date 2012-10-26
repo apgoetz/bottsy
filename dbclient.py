@@ -50,7 +50,20 @@ def add_xc(conn, eid, alive, xc, parents, age, score):
               '("%s", %d, "%s", "%s", %d, %f)' % 
                (eid, int(alive), xc, parents, int(age), float(score))))
 
+# Set the alive state of a chromosome
+def set_alive(conn, id, isalive):
+    alive_val = 1 if isalive else 0
+    conn.execute('UPDATE chromosome SET alive = %d WHERE id = %d' %(isalive, id))
 
+def set_score(conn, id, score):
+    conn.execute('UPDATE chromosome SET score = %f WHERE id = %f' %(float(score), id))
+
+def set_age(conn, id, age):
+    conn.execute('UPDATE chromosome SET age = %d WHERE id = %d' %(age, id))
+
+
+    
+    
 def init_db(name):
 ####START OF SCRIPT
 

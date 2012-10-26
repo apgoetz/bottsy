@@ -1,3 +1,5 @@
+#!/usr/bin/python
+import os
 import random
 from math import *
 from Tkinter import *

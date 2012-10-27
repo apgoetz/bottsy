@@ -66,7 +66,7 @@ def set_age(conn, id, age):
 def init_db(dbname):
 ####START OF SCRIPT
 	#make a connection to the database
-	conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(dbname)
 	#once we have a connection we need a 'cursor' to actually do anything..
     c = conn.cursor()
 
@@ -97,7 +97,7 @@ def init_db(dbname):
 	score REAL NOT NULL,
 	FOREIGN KEY(eid) REFERENCES experiment(id))''')
 	
-	return conn
+    return conn
 
 def close_db(conn): 
     # close the db:

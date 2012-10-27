@@ -1,6 +1,6 @@
-DIR=/u/$(USER)/public_html/
-SERVER=web.cecs.pdx.edu
-FILES=bottsy.py .htaccess linuxwords
+DIR=/u/$(USER)/
+SERVER=rita.cat.pdx.edu
+FILES=bottsy.py .htaccess linuxwords bottsydb dbclient.py render.py 
 all:
 	scp $(FILES) $(SERVER):$(DIR)
 

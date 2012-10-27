@@ -67,6 +67,10 @@ def set_age(conn, id, age):
 def get_open_eid(conn):
     return conn.execute('SELECT id FROM experiment ORDER BY id DESC LIMIT 1').fetchone()[0]
 
+# return enumeration of active chromosomes in current generation
+def get_active_xc(conn, eid):
+    return conn.execute('SELECT id from chromosome WHERE eid = %d AND  alive = 1' % eid)
+
 def init_db(dbname):
 ####START OF SCRIPT
 	#make a connection to the database

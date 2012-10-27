@@ -141,6 +141,6 @@ while i < max_iter:
 	master.update()
 
 print "Saving image file... "
-cv.postscript(file = "images/%s.eps" % xcid)
-print "Waiting to end..."
-mainloop()
+cv.postscript(file = "images/output.eps")
+os.system("convert images/output.eps images/%s.png" % xcid)
+print "Ending..."

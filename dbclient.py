@@ -49,7 +49,7 @@ def add_xc(conn, eid, alive, xc, parents, age, score):
     # get 'cursor'
     c = conn.cursor()
     c.execute(('INSERT INTO chromosome (eid, alive, xc, parents, age, score) VALUES' + 
-               '("%s", %d, "%s", "%s", %d, %f)' % 
+               '("%s", %d, "%s", "%d", %d, %f)' % 
                (eid, int(alive), xc, parents, int(age), float(score))))
 
 # Set the alive state of a chromosome

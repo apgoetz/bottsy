@@ -6,6 +6,8 @@ from Tkinter import *
 from dbclient import *
 import json
 
+import Image,ImageDraw
+
 random.seed()
 
 conn = init_db("bottsydb")
@@ -28,7 +30,7 @@ def nextState(state, weightSet):
 		weights = weightSet['arc']
 	elif (state == 'T'): 
 		weights = weightSet['turn']
-	stateSet = ('L','A','T')
+	stateSet = ('L','L','T')
 	rnd = random.random() * sum(weights)
 	for i, w in enumerate(weights):
 		rnd -= w
@@ -75,20 +77,22 @@ def drawArc(x, y, vector, theta, r, cv):
 		xEnd = x + r*(cos(radians(adjTheta)))
 		yEnd = y - r*(1 + sin(radians(adjTheta)))	
 	
-	if xEnd > 500:
-		yEnd = boundaryAdjust(x, y, xEnd, yEnd, 500)
-		xEnd = 500
-	if xEnd < 0: 
-		yEnd = boundaryAdjust(x, y, xEnd, yEnd, 0)
-		xEnd = 0
-	if yEnd > 500: 
-		xEnd = boundaryAdjust(y, x, yEnd, xEnd, 500)
-		yEnd = 500
-	if yEnd < 0: 
-		xEnd = boundaryAdjust(y, x, yEnd, xEnd, 0)
-		yEnd = 0
+	if xEnd > 495:
+		yEnd = boundaryAdjust(x, y, xEnd, yEnd, 495)
+		xEnd = 495
+	if xEnd < 5: 
+		yEnd = boundaryAdjust(x, y, xEnd, yEnd, 5)
+		xEnd = 5
+	if yEnd > 495: 
+		xEnd = boundaryAdjust(y, x, yEnd, xEnd, 495)
+		yEnd = 495
+	if yEnd < 5: 
+		xEnd = boundaryAdjust(y, x, yEnd, xEnd, 5)
+		yEnd = 5
 	
-	cv.create_arc( bbox, width=DEF_WIDTH, start=startAng, extent=theta, style = ARC)
+	bbox = int(bbox[0]),int(bbox[1]),int(bbox[2]),int(bbox[3])
+		
+	cv.arc(bbox, startAng, theta, fill=0)
 	
 	return xEnd, yEnd
 
@@ -97,21 +101,20 @@ def drawLine(x, y, vector, d, cv):
 	xEnd = x + (d * cos(radians(vector)))
 	yEnd = y + (d * sin(radians(vector)))
 	
-	if xEnd > 500: xEnd = 500
-	if xEnd < 0: xEnd = 0
+	if xEnd > 495: xEnd = 495
+	if xEnd < 5: xEnd = 5
 		
-	if yEnd > 500: yEnd = 500
-	if yEnd < 0: yEnd = 0		
+	if yEnd > 495: yEnd = 495
+	if yEnd < 5: yEnd = 5		
 		
-	cv.create_line( x, y, xEnd, yEnd, width=DEF_WIDTH)	
+	cv.line( (x, y, xEnd, yEnd), fill=0, width=DEF_WIDTH)	
 	
 	return xEnd, yEnd
 
-master = Tk()
+im = Image.open('images/blank.png')
 
 print "Initializing canvas..."
-cv = Canvas(master, width=500, height=500)
-cv.pack()
+cv = ImageDraw.Draw(im)
 
 print "Initializing starting position..."
 
@@ -122,9 +125,22 @@ vector = 0
 state = 'L'
 
 print "Generating Random line art..."
+ir_rad = 3 
+lightLevel = 0	
 
 while i < max_iter:
-	state = nextState(state,lightWeights)
+
+	for x in range(-ir_rad,ir_rad+1):
+		for y in range(-ir_rad,ir_rad+1):
+			lightLevel += im.getpixel((position[0] + x, position[1] + y))[0]
+	lightLevel = lightLevel/(ir_rad * ir_rad)
+
+	if (lightLevel > 200): 
+		weightSet = darkWeights
+	else: 
+		weightSet = lightWeights
+
+	state = nextState(state,weightSet)
 	if state == 'L':
 		d = random.randint(xc['dMin'],xc['dMax'])
 		position = drawLine(position[0], position[1], vector, d, cv)
@@ -138,9 +154,7 @@ while i < max_iter:
 		if vector < -360: vector += 360
 		if vector > 360: vector -= 360
 	i = i + 1
-	master.update()
 
 print "Saving image file... "
-cv.postscript(file = "images/output.eps")
-os.system("convert images/output.eps images/%s.png" % xcid)
+im.save('images/%s.png' % xcid)
 print "Ending..."

@@ -12,8 +12,8 @@ conn = init_db("bottsydb")
 xcid = sys.argv[1]
 xc_entry = json.loads(select_xc(conn,xcid)[3])
 xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
-lightWeights = dict(zip(['lightLine','lightArc','lightTurn'],xc_entry[1][0]))
-darkWeights = dict(zip(['darkLine','darkArc','darkTurn'],xc_entry[1][1]))
+lightWeights = dict(zip(['line','arc','turn'],xc_entry[1][0]))
+darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
 print xc
 print lightWeights
 print darkWeights
@@ -21,19 +21,19 @@ close_db(conn)
 
 DEF_WIDTH = 2
 
-def nextState(state):
+def nextState(state, weightSet):
 	if (state == 'L'):
-		weights = lightWeights['lightLine']
+		weights = weightSet['line']
 	elif (state == 'A'):
-		weights = lightWeights['lightArc']
+		weights = weightSet['arc']
 	elif (state == 'T'): 
-		weights = lightWeights['lightTurn']
-	states = ('L','A','T')
+		weights = weightSet['turn']
+	stateSet = ('L','A','T')
 	rnd = random.random() * sum(weights)
 	for i, w in enumerate(weights):
 		rnd -= w
 		if rnd < 0:
-			return states[i]
+			return stateSet[i]
 	
 def boundaryAdjust(positionA, positionB, expectedA, expectedB, boundary):
 	return (expectedB - ((abs(expectedA - boundary)*(expectedB - positionB))/(expectedA - positionA)))
@@ -55,7 +55,6 @@ def drawArc(x, y, vector, theta, r, cv):
 		bbox = (x - 2*r), (y - r), (x), (y + r)
 		adjTheta = theta
 		xEnd = x - r*(1 - cos(radians(adjTheta)))
-
 		yEnd = y - r*sin(radians(adjTheta))
 	elif (startAng == 180):
 		# Movement C, G
@@ -114,13 +113,10 @@ print "Initializing canvas..."
 cv = Canvas(master, width=500, height=500)
 cv.pack()
 
-i = 0
-
-xl = {'rtMin':5000 , 'rtMax':10000, 'dMin':5, 'dMax':25, 'thetaMin':-70, 'thetaMax':70, 'rMin':5, 'rMax':25, 'phiMin':-45, 'phiMax':45} 
-
 print "Initializing starting position..."
 
-max_iter = random.randint(xl['rtMin'],xl['rtMax'])
+i = 0
+max_iter = random.randint(5000,10000)
 position = 250, 250
 vector = 0
 state = 'L'
@@ -128,7 +124,7 @@ state = 'L'
 print "Generating Random line art..."
 
 while i < max_iter:
-	state = nextState(state)
+	state = nextState(state,lightWeights)
 	if state == 'L':
 		d = random.randint(xc['dMin'],xc['dMax'])
 		position = drawLine(position[0], position[1], vector, d, cv)
@@ -145,6 +141,6 @@ while i < max_iter:
 	master.update()
 
 print "Saving image file... "
-cv.postscript(file = "output.eps")
+cv.postscript(file = "images/%s.eps" % xcid)
 print "Waiting to end..."
 mainloop()

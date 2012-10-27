@@ -4,19 +4,36 @@ import random
 from math import *
 from Tkinter import *
 from dbclient import *
+import json
 
-conn = init_db("chromosome")
+random.seed()
+
+conn = init_db("bottsydb")
 xcid = sys.argv[1]
-xc = select_xc(conn,xcid)
+xc_entry = json.loads(select_xc(conn,xcid)[3])
+xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
+lightWeights = dict(zip(['lightLine','lightArc','lightTurn'],xc_entry[1][0]))
+darkWeights = dict(zip(['darkLine','darkArc','darkTurn'],xc_entry[1][1]))
 print xc
+print lightWeights
+print darkWeights
+close_db(conn)
 
 DEF_WIDTH = 2
 
 def nextState(state):
-	random.seed()
-	weight = random.randint(0,4)
-	stateArray = ('L', 'A', 'T', 'T', 'T')
-	return stateArray[weight]
+	if (state == 'L'):
+		weights = lightWeights['lightLine']
+	elif (state == 'A'):
+		weights = lightWeights['lightArc']
+	elif (state == 'T'): 
+		weights = lightWeights['lightTurn']
+	states = ('L','A','T')
+	rnd = random.random() * sum(weights)
+	for i, w in enumerate(weights):
+		rnd -= w
+		if rnd < 0:
+			return states[i]
 	
 def boundaryAdjust(positionA, positionB, expectedA, expectedB, boundary):
 	return (expectedB - ((abs(expectedA - boundary)*(expectedB - positionB))/(expectedA - positionA)))
@@ -113,21 +130,20 @@ print "Generating Random line art..."
 while i < max_iter:
 	state = nextState(state)
 	if state == 'L':
-		d = random.randint(xl['dMin'],xl['dMax'])
+		d = random.randint(xc['dMin'],xc['dMax'])
 		position = drawLine(position[0], position[1], vector, d, cv)
 	elif state == 'A':
-		theta = random.randint(xl['thetaMin'],xl['thetaMax'])
-		r = random.randint(xl['rMin'],xl['rMax'])
+		theta = random.randint(xc['thetaMin'],xc['thetaMax'])
+		r = random.randint(xc['rMin'],xc['rMax'])
 		position = drawArc( position[0], position[1], vector, theta, r, cv)   
 	elif state == 'T':
 		# change direction
-		vector += random.randint(xl['phiMin'],xl['phiMax'])
+		vector += random.randint(xc['phiMin'],xc['phiMax'])
 		if vector < -360: vector += 360
 		if vector > 360: vector -= 360
 	i = i + 1
 	master.update()
 
-dbclient.close_db(conn)
 print "Saving image file... "
 cv.postscript(file = "output.eps")
 print "Waiting to end..."

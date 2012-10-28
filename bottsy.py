@@ -11,18 +11,32 @@ DBNAME = 'bottsydb'
 def calc_elo(a, b):
     return 1.0/(1 + math.pow(10,(b-a)/400))
 
+def calc_c(rating):
+    if rating < 2000:
+        return 30
+    elif rating < 2400:
+        return 130 - rating/20.0
+    else:
+        return 10
+    
 
 def update_rank(winner, loser):
     conn = init_db(DBNAME)
-    win_score = get_score(conn, int(winner))
-    lose_score = get_score(conn, int(loser))
+    win_id = int(winner)
+    lose_id = int(loser)
+    win_score = get_score(conn, win_id)
+    lose_score = get_score(conn, lose_id)
     
     win_exp = calc_elo(win_score, lose_score)
     lose_exp = calc_elo(lose_score, win_score)
     
+    win_new_score = win_score + calc_c(win_id) * (1 - calc_elo(win_id, lose_id))
+    los_new_score = lose_score + calc_c(lose_id) * (0 - calc_elo(lose_id,win_id))
     
+    set_score(conn, win_id, win_new_score)
+    set_score(conn, lose_id, los_new_score)
+
     
-    set_score(conn, int(winner), win_score + 1)
     close_db(conn)
 
 def random_line():
@@ -66,10 +80,12 @@ print "<html>"
 if "winner" not in form and "loser" not in form:
     print ""
 else:
-    update_rank(form["winner"].value, form["loser"].value)
+    win_id = int(form["winner"].value)
+    lose_id = int (form["loser"].value)
+    update_rank(win_id, lose_id)
     print "<h1> Winner and Loser </h1>"
     print "<p>"
-    print form["winner"].value
+    print "{0}, new score {1}".format(win_id, get_score(conn, win_id))
     print "</p>"
 
     print "<p><em>"
@@ -77,7 +93,7 @@ else:
     print "</em></p>"
 
     print "<p>"
-    print form["loser"].value
+    print "{0}, new score {1}".format(lose_id, get_score(conn, lose_id))
     print "</p>"
 
 display_pair(conn)

@@ -48,9 +48,9 @@ def add_exp(conn, name, heuristics):
 def add_xc(conn, eid, alive, xc, parents, age, score):
     # get 'cursor'
     c = conn.cursor()
-    c.execute(('INSERT INTO chromosome (eid, alive, xc, parents, age, score) VALUES' + 
-               '("%s", %d, "%s", "%d", %d, %f)' % 
-               (eid, int(alive), xc, parents, int(age), float(score))))
+    c.execute('INSERT INTO chromosome (eid, alive, xc, parents, age, score) VALUES' + 
+               '(?, ?, ?, ?, ?, ?)' ,
+               (str(eid), str(alive), xc, str(parents), str(age), str(score)))
 
 # Set the alive state of a chromosome
 def set_alive(conn, id, isalive):

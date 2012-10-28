@@ -3,7 +3,7 @@ import json
 from dbclient import *;
 import random;
 import pickle
-
+import os
 
 DB = 'bottsydb'
 
@@ -44,7 +44,7 @@ conn = init_db(DB)
 if(len(sys.argv) < 2):
     num_elements = 100
 else:
-    num_elements = sys.arv[1]
+    num_elements = int(sys.argv[1])
 
 add_exp(conn, "test", "")
 EID = get_open_eid(conn)
@@ -52,5 +52,7 @@ print "New EID: " + str(EID)
 
 for i in range(num_elements):
     build_xc(conn, EID)
+    
+    
 close_db(conn)
 

@@ -65,11 +65,17 @@ def set_age(conn, id, age):
 
 def get_score(conn, id):
     return conn.execute('SELECT score FROM chromosome WHERE id = %d' % id).fetchone()[0]
-    
+
+
+
 
 # get the id of the currently open experiment
 def get_open_eid(conn):
     return conn.execute('SELECT id FROM experiment ORDER BY id DESC LIMIT 1').fetchone()[0]
+
+#get ranked open chromosomes    
+def get_ranked_xc(conn,eid):
+    return conn.execute('SELECT id FROM chromosome WHERE eid = %d AND alive = 1 ORDER BY score DESC' % eid)
 
 # return enumeration of active chromosomes in current generation
 def get_active_xc(conn, eid):

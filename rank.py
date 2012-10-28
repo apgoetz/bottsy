@@ -6,15 +6,20 @@ conn = init_db('bottsydb')
 
 eid = get_open_eid(conn)
 
-rows = get_ranked_xc(conn, eid).fetchall()
+
 
 print "Content-Type: text/html"     # HTML is following
 print                               # blank line, end of headers
 
 print '<html>'
+form = cgi.FieldStorage()
+if "eid" not in form:
+    print '<h1>Current Robot Ranking:</h1>'
+else:
+    eid = int(form['eid'].value)
+    print '<h1> Robot Ranking for Generation %d </h1>' % eid
 
-print '<h1>Current Robot Ranking:</h1>'
-
+rows = get_ranked_xc(conn, eid).fetchall()
 for r in rows:
     score = get_score(conn, r[0])
     print "<a href='/bottsy/images/{0}.png'>{0}</a> Score: {1}<br/>".format(r[0], score)

@@ -99,6 +99,9 @@ else:
 
 
 display_pair(conn)
+
+print "<div style='clear:both'><a href='/bottsy/rank.py'>Ranking</a></div>"
+
 print "</html>"
 close_db(conn)
 

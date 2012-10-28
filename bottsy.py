@@ -45,13 +45,6 @@ def update_rank(winner, loser):
     
     close_db(conn)
 
-def random_line():
-    afile = open('linuxwords')
-    line = next(afile)
-    for num, aline in enumerate(afile):
-        if random.randrange(num + 2): continue
-        line = aline
-    return line.rstrip()
 
 def display_pair(conn):
     eid = get_open_eid(conn)

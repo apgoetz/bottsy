@@ -58,14 +58,22 @@ def set_alive(conn, id, isalive):
     conn.execute('UPDATE chromosome SET alive = %d WHERE id = %d' %(isalive, id))
 
 def set_score(conn, id, score):
-    conn.execute('UPDATE chromosome SET score = %f WHERE id = %f' %(float(score), id))
+    conn.execute('UPDATE chromosome SET score = %f WHERE id = %d' %(float(score), id))
 
 def set_age(conn, id, age):
     conn.execute('UPDATE chromosome SET age = %d WHERE id = %d' %(age, id))
 
+def get_score(conn, id):
+    return conn.execute('SELECT score FROM chromosome WHERE id = %d' % id).fetchone()[0]
+    
+
 # get the id of the currently open experiment
 def get_open_eid(conn):
     return conn.execute('SELECT id FROM experiment ORDER BY id DESC LIMIT 1').fetchone()[0]
+
+# return enumeration of active chromosomes in current generation
+def get_active_xc(conn, eid):
+    return conn.execute('SELECT id from chromosome WHERE eid = %d AND  alive = 1' % eid)
 
 def init_db(dbname):
 ####START OF SCRIPT

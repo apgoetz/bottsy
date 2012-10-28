@@ -23,7 +23,7 @@ def init():
 	#darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
 	print xc
 	close_db(conn)
-	random.seed()
+	random.seed(xcid)
 	return xc
 
 

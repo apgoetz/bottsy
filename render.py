@@ -4,24 +4,28 @@ import random
 from math import *
 from Tkinter import *
 from dbclient import *
-import json
+import pickle
 
 import Image,ImageDraw
 
-random.seed()
+DEF_WIDTH = 2 
 
-conn = init_db("bottsydb")
-xcid = sys.argv[1]
-xc_entry = json.loads(select_xc(conn,xcid)[3])
-xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
-lightWeights = dict(zip(['line','arc','turn'],xc_entry[1][0]))
-darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
-print xc
-print lightWeights
-print darkWeights
-close_db(conn)
+def init():
+	if len(sys.argv) < 2:
+		sys.os.exit()
+	xcid = sys.argv[1]
+	if os.path.exists("images/%s.png" % xcid):
+		sys.os.exit()
+	conn = init_db("bottsydb")
+	xc = pickle.loads(select_xc(conn,xcid)[3])
+	#xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
+	#lightWeights = dict(zip(['line','arc','turn'],xc_entry[1][0]))
+	#darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
+	print xc
+	close_db(conn)
+	random.seed()
+	return xc
 
-DEF_WIDTH = 2
 
 def nextState(state, weightSet):
 	if (state == 'L'):
@@ -30,9 +34,9 @@ def nextState(state, weightSet):
 		weights = weightSet['arc']
 	elif (state == 'T'): 
 		weights = weightSet['turn']
-	stateSet = ('L','L','T')
-	rnd = random.random() * sum(weights)
-	for i, w in enumerate(weights):
+	stateSet = ('L','T')
+	rnd = random.random() * sum(dict.values(weights))
+	for i, w in enumerate(dict.values(weights)):
 		rnd -= w
 		if rnd < 0:
 			return stateSet[i]
@@ -111,36 +115,52 @@ def drawLine(x, y, vector, d, cv):
 	
 	return xEnd, yEnd
 
-im = Image.open('images/blank.png')
 
-print "Initializing canvas..."
+if len(sys.argv) < 2:
+	sys.exit()
+xcid = sys.argv[1]
+if os.path.exists("images/%s.png" % xcid):
+	sys.exit()
+print "Openeing db"
+conn = init_db("bottsydb")
+print "Loading xc"
+xc_full = select_xc(conn,xcid)[3]
+xc_full = pickle.loads(str(xc_full))
+#xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
+#lightWeights = dict(zip(['line','arc','turn'],xc_entry[1][0]))
+#darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
+close_db(conn)
+
+print "Preparing blank image"
+random.seed()
+im = Image.open('images/blank.png')
 cv = ImageDraw.Draw(im)
 
 print "Initializing starting position..."
-
 i = 0
-max_iter = random.randint(5000,10000)
+max_iter = random.randint(xc_full['light']['rtMin'],xc_full['light']['rtMax'])
 position = 250, 250
 vector = 0
 state = 'L'
+lightLevel = 0 
+lSense = xc_full['light']['lSense']
+ir_rad = 3
 
 print "Generating Random line art..."
-ir_rad = 3 
-lightLevel = 0	
-
 while i < max_iter:
-
+	
 	for x in range(-ir_rad,ir_rad+1):
 		for y in range(-ir_rad,ir_rad+1):
 			lightLevel += im.getpixel((position[0] + x, position[1] + y))[0]
 	lightLevel = lightLevel/(ir_rad * ir_rad)
 
-	if (lightLevel > 200): 
-		weightSet = darkWeights
+	if (lightLevel > lSense): 
+		xc = xc_full['light']
 	else: 
-		weightSet = lightWeights
+		xc = xc_full['dark']
+	lSense = xc['lSense']
 
-	state = nextState(state,weightSet)
+	state = nextState(state,xc['weights'])
 	if state == 'L':
 		d = random.randint(xc['dMin'],xc['dMax'])
 		position = drawLine(position[0], position[1], vector, d, cv)

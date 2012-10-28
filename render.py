@@ -1,31 +1,13 @@
 #!/usr/bin/python2
 import os
 import random
-from math import *
-from Tkinter import *
-from dbclient import *
 import pickle
-
 import Image,ImageDraw
 
+from math import *
+from dbclient import *
+
 DEF_WIDTH = 2 
-
-def init():
-	if len(sys.argv) < 2:
-		sys.os.exit()
-	xcid = sys.argv[1]
-	if os.path.exists("images/%s.png" % xcid):
-		sys.os.exit()
-	conn = init_db("bottsydb")
-	xc = pickle.loads(select_xc(conn,xcid)[3])
-	#xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
-	#lightWeights = dict(zip(['line','arc','turn'],xc_entry[1][0]))
-	#darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
-	print xc
-	close_db(conn)
-	random.seed(xcid)
-	return xc
-
 
 def nextState(state, weightSet):
 	if (state == 'L'):
@@ -115,28 +97,29 @@ def drawLine(x, y, vector, d, cv):
 	
 	return xEnd, yEnd
 
-
+# check for xcid arg
 if len(sys.argv) < 2:
 	sys.exit()
+
 xcid = sys.argv[1]
+
 if os.path.exists("images/%s.png" % xcid):
 	sys.exit()
-print "Openeing db"
+
+#print "Openeing db"
 conn = init_db("bottsydb")
-print "Loading xc"
+
+#print "Loading xc"
 xc_full = select_xc(conn,xcid)[3]
 xc_full = pickle.loads(str(xc_full))
-#xc = dict(zip(['dMax','dMin', 'thetaMax', 'thetaMin', 'rMax', 'rMin', 'phiMax', 'phiMin'],xc_entry[0]))
-#lightWeights = dict(zip(['line','arc','turn'],xc_entry[1][0]))
-#darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
 close_db(conn)
 
-print "Preparing blank image"
+#print "Preparing blank image"
 random.seed()
 im = Image.open('blank.png')
 cv = ImageDraw.Draw(im)
 
-print "Initializing starting position..."
+#print "Initializing starting position..."
 i = 0
 max_iter = random.randint(xc_full['light']['rtMin'],xc_full['light']['rtMax'])
 position = 250, 250
@@ -146,7 +129,7 @@ lightLevel = 0
 lSense = xc_full['light']['lSense']
 ir_rad = 3
 
-print "Generating Random line art..."
+#print "Generating Random line art..."
 while i < max_iter:
 	
 	for x in range(-ir_rad,ir_rad+1):
@@ -175,6 +158,6 @@ while i < max_iter:
 		if vector > 360: vector -= 360
 	i = i + 1
 
-print "Saving image file... "
+#print "Saving image file... "
 im.save('images/%s.png' % xcid)
-print "Ending..."
+#print "Ending..."

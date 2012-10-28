@@ -32,7 +32,13 @@ def update_rank(winner, loser):
     
     win_new_score = win_score + calc_c(win_id) * (1 - calc_elo(win_id, lose_id))
     los_new_score = lose_score + calc_c(lose_id) * (0 - calc_elo(lose_id,win_id))
-    
+
+    if win_new_score < 0:
+        win_new_score = 0
+
+    if los_new_score < 0:
+        los_new_score = 0
+
     set_score(conn, win_id, win_new_score)
     set_score(conn, lose_id, los_new_score)
 

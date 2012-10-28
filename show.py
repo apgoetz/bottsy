@@ -21,7 +21,7 @@ xc = pickle.loads(str(select_xc(conn,xcid)[3]))
 print '<h1>Show Art and xc:</h1>'
 
 score = get_score(conn, xcid)
-print "<img src='/bottsy/images/{0}.png'> <br/>Score: {1}<br/>xc: {2}".format(xcid, score, xc)
+print "<img src='/bottsy/images/{0}.png'> <br/>Score: {1}<br/>xc: {2}".format(xcid, int(score), xc)
 
 print '<p><a href="/bottsy/bottsy.py">Main Page</a></p>'
 

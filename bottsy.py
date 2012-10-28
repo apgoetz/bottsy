@@ -101,7 +101,8 @@ else:
 
 display_pair(conn)
 
-print "<div style='clear:both'><a href='/bottsy/rank.py'>Ranking</a></div>"
+print "<p style='clear:both'><a href='/bottsy/rank.py'>Ranking</a></p>"
+print "<p><a href='/bottsy/about.html'>About This Project</a></p>"
 
 print "</html>"
 close_db(conn)

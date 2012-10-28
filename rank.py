@@ -22,7 +22,7 @@ else:
 rows = get_ranked_xc(conn, eid).fetchall()
 for r in rows:
     score = get_score(conn, r[0])
-    print "<a href='/bottsy/images/{0}.png'>{0}</a> Score: {1}<br/>".format(r[0], score)
+    print "<a href='/bottsy/show.py?id={0}'>{0}</a> Score: {1}<br/>".format(r[0], score)
 
 print '<p><a href="/bottsy/bottsy.py">Main Page</a></p>'
 

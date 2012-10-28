@@ -27,11 +27,18 @@ def build_xc(c, eid):
     rt_min = random.randint(4000,rt_max)
 
     sense = random.randint(100,250)   
+    
+    L0 = random.random()
+    L1 = random.random()
+    L2 = random.random()
+    L3 = random.random()
 
-    L = 0.5
-    T = 0.5
+    T0 = 1 - L0
+    T1 = 1 - L1
+    T2 = 1 - L2
+    T3 = 1 - L3
 
-    xc_str = {'light':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L,'T':T},'turn':{'L':L,'T':T}}},'dark':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L,'T':T},'turn':{'L':L,'T':T}}}}
+    xc_str = {'light':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L0,'T':T0},'turn':{'L':L1,'T':T1}}},'dark':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L2,'T':T2},'turn':{'L':L3,'T':T3}}}}
     add_xc(c, eid, 1, pickle.dumps(xc_str), 1, 1, 100)
     
 

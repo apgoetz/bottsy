@@ -8,7 +8,7 @@ import pickle
 DB = 'bottsydb'
 
 
-NUM_XC = 16
+
 
 
 
@@ -40,15 +40,17 @@ def build_xc(c, eid):
 
 
 conn = init_db(DB)
-EID = 0
-if(len(sys.argv) < 2):
-    add_exp(conn, "test", "")
-    EID = get_open_eid(conn)
-    print "New EID: " + str(EID)
-else:
-    EID = sys.argv[1]
 
-for i in range(NUM_XC):
+if(len(sys.argv) < 2):
+    num_elements = 100
+else:
+    num_elements = sys.arv[1]
+
+add_exp(conn, "test", "")
+EID = get_open_eid(conn)
+print "New EID: " + str(EID)
+
+for i in range(num_elements):
     build_xc(conn, EID)
 close_db(conn)
 

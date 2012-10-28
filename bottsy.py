@@ -9,7 +9,8 @@ from dbclient import *
 DBNAME = 'bottsydb'
 
 def calc_elo(a, b):
-    return 1.0/(1 + math.pow(10,(b-a)/400))
+    value = 1.0/(1 + math.pow(10,(b-a)/400))
+    return value
 
 def calc_c(rating):
     if rating < 2000:
@@ -29,7 +30,7 @@ def update_rank(winner, loser):
     
     win_exp = calc_elo(win_score, lose_score)
     lose_exp = calc_elo(lose_score, win_score)
-    
+
     win_new_score = win_score + calc_c(win_id) * (1 - calc_elo(win_id, lose_id))
     los_new_score = lose_score + calc_c(lose_id) * (0 - calc_elo(lose_id,win_id))
 

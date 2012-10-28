@@ -23,7 +23,7 @@ def init():
 	#darkWeights = dict(zip(['line','arc','turn'],xc_entry[1][1]))
 	print xc
 	close_db(conn)
-	random.seed()
+	random.seed(xcid)
 	return xc
 
 
@@ -133,7 +133,7 @@ close_db(conn)
 
 print "Preparing blank image"
 random.seed()
-im = Image.open('images/blank.png')
+im = Image.open('blank.png')
 cv = ImageDraw.Draw(im)
 
 print "Initializing starting position..."

@@ -84,13 +84,14 @@ print                               # blank line, end of headers
 form = cgi.FieldStorage()
 
 print "<html>"
+print "<h2>Bottsy: Robot art Fight!</h2>"
 if "winner" not in form and "loser" not in form:
-    print "<h1>Click on the better thing:</h1>"
+    print "<h2>Click on the better thing:</h2>"
 else:
     win_id = int(form["winner"].value)
     lose_id = int (form["loser"].value)
     update_rank(win_id, lose_id)
-    print "<div><h1> Winner and Loser </h1>"
+    print "<div><h2> Winner and Loser </h2>"
     print "<p>"
     print "<a href=/bottsy/images/{0}.png>{0}</a>, new score {1}".format(win_id, get_score(conn, win_id))
 

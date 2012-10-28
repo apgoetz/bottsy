@@ -3,15 +3,25 @@
 import cgi
 import random
 import os
+import math
 from dbclient import *
 
 DBNAME = 'bottsydb'
+
+def calc_elo(a, b):
+    return 1.0/(1 + math.pow(10,(b-a)/400))
 
 
 def update_rank(winner, loser):
     conn = init_db(DBNAME)
     win_score = get_score(conn, int(winner))
     lose_score = get_score(conn, int(loser))
+    
+    win_exp = calc_elo(win_score, lose_score)
+    lose_exp = calc_elo(lose_score, win_score)
+    
+    
+    
     set_score(conn, int(winner), win_score + 1)
     close_db(conn)
 

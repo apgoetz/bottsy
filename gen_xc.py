@@ -4,12 +4,9 @@ from dbclient import *;
 import random;
 import pickle
 
-if(len(sys.argv) < 2):
-    print "Must supply eid"
-    sys.exit(-1)
 
 DB = 'bottsydb'
-EID = int(sys.argv[1])
+
 
 NUM_XC = 16
 
@@ -35,8 +32,7 @@ def build_xc(c, eid):
     T = 0.5
 
     xc_str = {'light':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L,'T':T},'turn':{'L':L,'T':T}}},'dark':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L,'T':T},'turn':{'L':L,'T':T}}}}
-    print pickle.dumps(xc_str)
-    add_xc(c, eid, 1, pickle.dumps(xc_str), 1, 1, 1)
+    add_xc(c, eid, 1, pickle.dumps(xc_str), 1, 1, 100)
     
 
     
@@ -44,6 +40,14 @@ def build_xc(c, eid):
 
 
 conn = init_db(DB)
+EID = 0
+if(len(sys.argv) < 2):
+    add_exp(conn, "test", "")
+    EID = get_open_eid(conn)
+    print "New EID: " + str(EID)
+else:
+    EID = sys.argv[1]
+
 for i in range(NUM_XC):
     build_xc(conn, EID)
 close_db(conn)

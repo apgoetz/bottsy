@@ -87,7 +87,7 @@ else:
     update_rank(win_id, lose_id)
     print "<div><h2> Winner and Loser </h2>"
     print "<p>"
-    print "<a href=/bottsy/images/{0}.png>{0}</a>, new score {1}".format(win_id, get_score(conn, win_id))
+    print "<a href=/bottsy/show.py?id={0}>{0}</a>, new score {1}".format(win_id, get_score(conn, win_id))
 
 
     print "<em>"
@@ -95,7 +95,7 @@ else:
     print "</em>"
 
 
-    print "<a href=/bottsy/images/{0}.png>{0}</a>, new score {1}".format(lose_id, get_score(conn, lose_id))
+    print "<a href=/bottsy/show.py?id={0}>{0}</a>, new score {1}".format(lose_id, get_score(conn, lose_id))
     print "</p></div>"
 
 

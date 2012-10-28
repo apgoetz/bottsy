@@ -57,14 +57,14 @@ def display_pair(conn):
     while id1 == id2:
         id2 = random.choice(rows)[0]
 
-    print os.popen("python2 render.py %d" % id1)
-    print os.popen("python2 render.py %d" % id2)
+    os.system("python2 render.py %d" % id1)
+    os.system("python2 render.py %d" % id2)
 
 
-    print "<h1>Click on the better thing:</h1>"
-    print "<p><a href='bottsy.py?winner={0}&loser={1}'><img src='/bottsy/images/{0}.png'/></a>".format(id1, id2)
-    print " or "
-    print "<a href='bottsy.py?winner={1}&loser={0}'><img src='/bottsy/images/{1}.png'/></a></p>".format(id1, id2)
+
+    print "<p style='float: left'><b>{0}</b><br/><a href='bottsy.py?winner={0}&loser={1}'><img src='/bottsy/images/{0}.png'/></a></p>".format(id1, id2)
+
+    print "<p style='float: right'><b>{1}</b><br/><a href='bottsy.py?winner={1}&loser={0}'><img src='/bottsy/images/{1}.png'/></a></p>".format(id1, id2)
     
 
 ## BEGINNING OF SCRIPT
@@ -76,28 +76,29 @@ print                               # blank line, end of headers
 
 
 form = cgi.FieldStorage()
+
 print "<html>"
 if "winner" not in form and "loser" not in form:
-    print ""
+    print "<h1>Click on the better thing:</h1>"
 else:
     win_id = int(form["winner"].value)
     lose_id = int (form["loser"].value)
     update_rank(win_id, lose_id)
-    print "<h1> Winner and Loser </h1>"
+    print "<div><h1> Winner and Loser </h1>"
     print "<p>"
-    print "{0}, new score {1}".format(win_id, get_score(conn, win_id))
-    print "</p>"
+    print "<a href=/bottsy/images/{0}.png>{0}</a>, new score {1}".format(win_id, get_score(conn, win_id))
 
-    print "<p><em>"
+
+    print "<em>"
     print "beat:"
-    print "</em></p>"
+    print "</em>"
 
-    print "<p>"
-    print "{0}, new score {1}".format(lose_id, get_score(conn, lose_id))
-    print "</p>"
+
+    print "<a href=/bottsy/images/{0}.png>{0}</a>, new score {1}".format(lose_id, get_score(conn, lose_id))
+    print "</p></div>"
+
 
 display_pair(conn)
-
 print "</html>"
 close_db(conn)
 

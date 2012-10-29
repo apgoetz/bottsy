@@ -49,13 +49,15 @@ def print_xc(xc):
 # from the Chromosome structure
 # defined above.
 def transpose(xc, randNum):
+	
 	return None
 
 	
 # 
 def cross(xc1, xc2):
-
-	return None
+	child = copy.deepcopy(xc1)
+	child['light'] = xc2['dark']
+	return child
 
 	
 def mutate(xc):
@@ -135,7 +137,8 @@ def mutate(xc):
 
 
 def get_mutated_xc(conn, eid):
-	xc_row = get_weighted_id(conn,eid)
-	print 'chosen id = %d' % xc_row[0]
-	return mutate(extract_xc(xc_row))
+	xc_row1 = get_weighted_id(conn,eid)
+	xc_row2 = get_weighted_id(conn,eid)
+	#print 'chosen id = %d' % xc_row[0]
+	return mutate(cross(extract_xc(xc_row1),extract_xc(xc_row2)))
 

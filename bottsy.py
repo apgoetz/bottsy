@@ -43,28 +43,47 @@ def update_rank(winner, loser):
     set_score(conn, win_id, win_new_score)
     set_score(conn, lose_id, los_new_score)
 
-    
     close_db(conn)
 
 
-def display_pair(conn):
+
+def display_pair(dbfile):
+    conn = init_db(dbfile)
     eid = get_open_eid(conn)
+    rows = map(lambda r: r[0], get_active_xc(conn,eid))
+    close_db(conn)
+    exit_code = 1
+    id1 = 0
+    id2 = 0
+    while exit_code != 0:        
+        id1 = random.choice(rows)
+        exit_code = os.system("python2 render.py %d" % id1)
+        if exit_code != 0:
 
-    rows = get_active_xc(conn,eid).fetchall()
+            conn = init_db(dbfile)
+            set_score(conn, id1, 0)
+            set_alive(conn, id1, 0)
+            close_db(conn)
 
-    id1 = random.choice(rows)[0]
-    id2 = random.choice(rows)[0]
-    while id1 == id2:
-        id2 = random.choice(rows)[0]
+    exit_code = 1;
 
-    os.system("python2 render.py %d" % id1)
-    os.system("python2 render.py %d" % id2)
+    while exit_code != 0:
+        id2 = random.choice(rows)
+        while id1 == id2:
+            id2 = random.choice(rows)
+        exit_code = os.system("python2 render.py %d" % id2)
+        if exit_code != 0:
+
+            conn = init_db(dbfile)
+            set_score(conn, id2, 0)
+            set_alive(conn, id2, 0)
+            close_db(conn)
 
 
 
-    print "<p style='float: left'><b>{0}</b><br/><a href='bottsy.py?winner={0}&loser={1}'><img src='/bottsy/images/{0}.png'/></a></p>".format(id1, id2)
+    print "<p style='float: left; width:50%'><b>{0}</b><br/><a href='bottsy.py?winner={0}&loser={1}'><img style='max-width: 100%' src='/bottsy/images/{0}.png'/></a></p>".format(id1, id2)
 
-    print "<p style='float: right'><b>{1}</b><br/><a href='bottsy.py?winner={1}&loser={0}'><img src='/bottsy/images/{1}.png'/></a></p>".format(id1, id2)
+    print "<p style='float: right; width:50%'><b>{1}</b><br/><a href='bottsy.py?winner={1}&loser={0}'><img style='max-width: 100%' src='/bottsy/images/{1}.png'/></a></p>".format(id1, id2)
     
 
 ## BEGINNING OF SCRIPT
@@ -99,7 +118,7 @@ else:
     print "</p></div>"
 
 
-display_pair(conn)
+display_pair(DBNAME)
 
 print "<p style='clear:both'><a href='/bottsy/rank.py'>Ranking</a></p>"
 print "<p><a href='/bottsy/about.html'>About This Project</a></p>"

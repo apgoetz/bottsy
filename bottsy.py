@@ -81,9 +81,9 @@ def display_pair(dbfile):
 
 
 
-    print "<p style='float: left'><b>{0}</b><br/><a href='bottsy.py?winner={0}&loser={1}'><img src='/bottsy/images/{0}.png'/></a></p>".format(id1, id2)
+    print "<p style='float: left; width:50%'><b>{0}</b><br/><a href='bottsy.py?winner={0}&loser={1}'><img style='max-width: 100%' src='/bottsy/images/{0}.png'/></a></p>".format(id1, id2)
 
-    print "<p style='float: right'><b>{1}</b><br/><a href='bottsy.py?winner={1}&loser={0}'><img src='/bottsy/images/{1}.png'/></a></p>".format(id1, id2)
+    print "<p style='float: right; width:50%'><b>{1}</b><br/><a href='bottsy.py?winner={1}&loser={0}'><img style='max-width: 100%' src='/bottsy/images/{1}.png'/></a></p>".format(id1, id2)
     
 
 ## BEGINNING OF SCRIPT

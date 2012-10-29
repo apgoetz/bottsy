@@ -2,7 +2,7 @@
 
 from dbclient import *
 import random
-import gen_xc
+
 import pickle
 import copy
 
@@ -21,9 +21,16 @@ def splice():
 		child = mutatue(xc)
 		add_xc(conn, EID, 1, child, "parents", 0, 0)
 	
-
-def select_xc(conn, EID):
-	get_active_xc(conn, EID)
+def get_weighted_id(conn, EID):
+	rows = get_active_xc(conn,EID)
+	xc_data = map(lambda r: select_xc(conn, r[0]), rows)
+	random.shuffle(xc_data)
+	ranks = map(lambda r: r[6], xc_data)
+	rnd = random.random() * sum(ranks)
+	for i, w in enumerate(ranks):
+		rnd -= w
+		if rnd < 0:
+		        return xc_data[i]
 	
 	
 
@@ -49,6 +56,7 @@ def transpose(xc, randNum):
 def cross(xc1, xc2):
 
 	return None
+
 	
 def mutate(xc):
 
@@ -120,9 +128,14 @@ def mutate(xc):
 	else:
 		child[threshold][field] = random.randint(randMin,randMax)
 		
-	print "%s %s %s %s" % (threshold, field, move, weight)
+#	print "%s %s %s %s" % (threshold, field, move, weight)
 
 	return child
 
 
+
+def get_mutated_xc(conn, eid):
+	xc_row = get_weighted_id(conn,eid)
+	print 'chosen id = %d' % xc_row[0]
+	return mutate(extract_xc(xc_row))
 

@@ -4,7 +4,7 @@ from dbclient import *;
 import random;
 import pickle
 import os
-
+import splicer
 DB = 'bottsydb'
 
 
@@ -39,6 +39,10 @@ def build_xc(c, eid):
     T3 = 1 - L3
 
     xc_str = {'light':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L0,'T':T0},'turn':{'L':L1,'T':T1}}},'dark':{'dMax':line_max,'dMin':line_min, 'phiMax':turn_max,'phiMin':turn_min, 'rtMax':rt_max, 'rtMin':rt_min, 'lSense':sense,'weights':{'line':{'L':L2,'T':T2},'turn':{'L':L3,'T':T3}}}}
+    
+    if eid > 1:
+        old_eid = eid - 1
+        xc_str = splicer.get_mutated_xc(c, old_eid)
     add_xc(c, eid, 1, pickle.dumps(xc_str), 1, 1, 100)
     
 

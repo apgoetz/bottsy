@@ -16,6 +16,7 @@ enum motor_pins{LD1 = 10, LD2 = 11, RD1 = 6, RD2 = 5};
 enum logic {TRUE = 1, FALSE = 0};
 enum fsm_state {LINE, ARC };
 enum motor_pwr {MOTOR_ON = 255, MOTOR_OFF = 0};
+
 // fsm design:
 // 
 struct sub_xc {
@@ -42,9 +43,11 @@ chromosome xc;
 
 const int PHOTO_PIN = 0;
 const int BUMPER_PIN = 2;
-
+const int LED_PIN = 7;
+const int DIAG_PIN = 13;
 const int LIGHT_MIN = 300;
 const int LIGHT_MAX = 330;
+const int DELAY_QUANTUM = 10;
 void init_motors() 
 {
 	pinMode(LD1, OUTPUT);
@@ -90,12 +93,12 @@ void setup()
      randomSeed(analogRead(0));
 
      
-     pinMode(13, OUTPUT);
-     digitalWrite(13,1);
+     pinMode(DIAG_PIN, OUTPUT);
+     digitalWrite(DIAG_PIN,1);
      delay(2000);
-     digitalWrite(13,0);
-     digitalWrite(7,0);
-     pinMode(7, OUTPUT);
+     digitalWrite(DIAG_PIN,0);
+     digitalWrite(LED_PIN,0);
+     pinMode(LED_PIN, OUTPUT);
      pinMode(BUMPER_PIN, INPUT);           // set pin to input
      digitalWrite(BUMPER_PIN, HIGH);       // turn on pullup resistors
 
@@ -135,7 +138,7 @@ void setup()
 void smart_delay(int len)
 {
 	for(int i = 0; i < len - 1; i++) {
-		delay(10); //10ms delay quantum
+		delay(DELAY_QUANTUM); //10ms delay quantum
 		if(digitalRead(BUMPER_PIN) == 1) {
 			set_motor(LEFT, REV, MOTOR_ON);
 			set_motor(RIGHT, REV, MOTOR_ON);
@@ -165,16 +168,16 @@ void update_xc(struct sub_xc * curxc)
 void fuzzy_mixer(struct chromosome * c_xc, int lightval)
 {
 	int p_range = LIGHT_MAX - LIGHT_MIN;
-	int dark_value = lightval - LIGHT_MIN;
-	int light_value = p_range - lightval - LIGHT_MIN;
+	int light_value = lightval - LIGHT_MIN;
+	int dark_value = p_range - lightval - LIGHT_MIN;
 	int rval;
 
 
-	int rd_power = c_xc->dark.state == LINE ? 255 : -255;
-	int rl_power = c_xc->light.state == LINE ? 255 : -255;
+	int rd_power = c_xc->dark.state == LINE ? MOTOR_ON : -MOTOR_ON;
+	int rl_power = c_xc->light.state == LINE ? MOTOR_ON : -MOTOR_ON;
 
 	int r_power = (rd_power * dark_value + rl_power * light_value) / p_range;
-	int l_power = 255;
+	int l_power = MOTOR_ON;
 
 	int d_time, l_time;
 	if(c_xc->dark.state == LINE) {

@@ -39,10 +39,10 @@ struct chromosome {
 };
 
 chromosome xc;
-int state;
+
 const int PHOTO_PIN = 0;
 const int BUMPER_PIN = 2;
-const int MOTOR_PWR = 255;
+
 const int LIGHT_MIN = 300;
 const int LIGHT_MAX = 330;
 void init_motors() 
@@ -88,7 +88,7 @@ void setup()
      init_motors();
      Serial.begin(9600);
      randomSeed(analogRead(0));
-     state = LINE;
+
      
      pinMode(13, OUTPUT);
      digitalWrite(13,1);
@@ -135,7 +135,7 @@ void setup()
 void smart_delay(int len)
 {
 	for(int i = 0; i < len - 1; i++) {
-		delay(10);
+		delay(10); //10ms delay quantum
 		if(digitalRead(BUMPER_PIN) == 1) {
 			set_motor(LEFT, REV, MOTOR_ON);
 			set_motor(RIGHT, REV, MOTOR_ON);
@@ -170,15 +170,8 @@ void fuzzy_mixer(struct chromosome * c_xc, int lightval)
 	int rval;
 
 
-	// rval = random(c_xc->light.max_line - c_xc->light.min_line) + 
-	// 	c_xc->light.min_line;
-	// light_value = light_value * rval / p_range;
-
-	// rval = random(c_xc->dark.max_line - c_xc->dark.min_line) + 
-	// 	c_xc->dark.min_line;
-	// dark_value = dark_value * rval / p_range;
 	int rd_power = c_xc->dark.state == LINE ? 255 : -255;
-	int rl_power = c_xc->light.state = LINE ? 255 : -255;
+	int rl_power = c_xc->light.state == LINE ? 255 : -255;
 
 	int r_power = (rd_power * dark_value + rl_power * light_value) / p_range;
 	int l_power = 255;

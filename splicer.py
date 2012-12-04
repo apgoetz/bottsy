@@ -45,10 +45,9 @@ def print_xc(xc):
 
 # grabs one portion of a chromosome
 # and swaps it with another portion
-# parent parameter is a tuple defined
-# from the Chromosome structure
-# defined above.
-def transpose(xc, randNum):
+def transpose(xc):
+	selection1 = rand_selection()
+	selection2 = rand_selection()
 	
 	return None
 
@@ -64,61 +63,13 @@ def mutate(xc):
 
 	child = copy.deepcopy(xc)
 
-	threshold = random.randint(1,2)
-	field = random.randint(1,8)
-	move = random.randint(1,2)
-	weight = random.randint(1,2)
+	selection = rand_selection()
+	
+	threshold = selection[0]
+	field = selection[1]
+	move = selection[2]
+	weight = selection[3]
 
-	if (field == 8):
-		move = {
-			1: "line",
-			2: "turn",
-		} [move]
-
-		weight = {
-			1: "L",
-			2: "T",
-		} [weight]
-
-	else:
-		move = None
-		weight = None
-		randMin = {
-			1: 0,
-			2: 0,
-			3: -360,
-			4: -360,
-			5: 100,
-			6: 100,
-			7: 0,
-		} [field]
-		randMax = {
-			1: 500,
-			2: 500,
-			3: 360,
-			4: 360,
-			5: 20000,
-			6: 20000,
-			7: 254,
-		} [field]
-
-	threshold = {
-		1: "light",
-		2: "dark",
-	} [threshold]
-
-	field = {
-		1: "dMax",
-		2: "dMin",
-		3: "phiMax",
-		4: "phiMin",
-		5: "rtMax",
-		6: "rtMin",
-		7: "lSense",
-		8: "weights",
-	} [field]
-		
-		
 	# if it is a weighted value,
 	if(field == "weights"):
 		child[threshold][field][move][weight] = random.random()
@@ -141,4 +92,70 @@ def get_mutated_xc(conn, eid):
 	xc_row2 = get_weighted_id(conn,eid)
 	#print 'chosen id = %d' % xc_row[0]
 	return mutate(cross(extract_xc(xc_row1),extract_xc(xc_row2)))
+
+
+# returns a tuple of the following format:
+# (threshold, field, move, weight)
+# NOTE: if field is not of type "weight",
+# both move and weight will be empty (None)
+def rand_selection():
+	threshold = random.randint(1,2)
+	field = random.randint(1,8)
+	move = random.randint(1,2)
+	weight = random.randint(1,2)
+
+	if (field == 8):
+		move = {
+			1: "line",
+			2: "turn",
+		} [move]
+
+		weight = {
+			1: "L",
+			2: "T",
+		} [weight]
+
+	else:
+		move = None
+		weight = None
+		# define what the maximum/minimum random value will be
+		# based on what was chosen
+		randMin = {
+			1: 0,
+			2: 0,
+			3: -360,
+			4: -360,
+			5: 100,
+			6: 100,
+			7: 0,
+		} [field]
+		randMax = {
+			1: 500,
+			2: 500,
+			3: 360,
+			4: 360,
+			5: 20000,
+			6: 20000,
+			7: 254,
+		} [field]
+
+	# Map numbers to threshold type
+	threshold = {
+		1: "light",
+		2: "dark",
+	} [threshold]
+
+	# Map number to field type
+	field = {
+		1: "dMax",
+		2: "dMin",
+		3: "phiMax",
+		4: "phiMin",
+		5: "rtMax",
+		6: "rtMin",
+		7: "lSense",
+		8: "weights",
+	} [field]
+
+return (threshold, field, move, weight)
 
